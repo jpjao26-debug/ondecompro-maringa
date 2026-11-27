@@ -8,11 +8,13 @@ As duas lojas de Maringá (79 "Maringá" e 215 "Maringá Seminário") recebem os
 """
 import os
 import time
+from datetime import date, timedelta
 
-from .comum import DADOS, log
+from .comum import DADOS, hoje, ler_json, log, salvar_json
 
 SITE = "https://www.assai.com.br"
 LOJAS = {79, 215}
+LISTA_SALVA = DADOS / "encartes_assai.json"   # última lista boa: serve se o site recusar no dia
 
 LISTA_JS = """
 async (lojas) => {
@@ -63,13 +65,20 @@ def encartes():
             nav = p.chromium.launch(**opcoes)
             pg = nav.new_context(locale="pt-BR").new_page()
             pg.goto(f"{SITE}/ofertas", wait_until="domcontentloaded", timeout=90000)
-            pg.wait_for_timeout(5000)
-            r = pg.evaluate(LISTA_JS, sorted(LOJAS))
+            r = None
+            # com o navegador aberto, o site às vezes pede uns segundos de verificação: tenta 3 vezes
+            for tentativa in range(3 if janela else 1):
+                pg.wait_for_timeout(5000 if tentativa == 0 else 12000)
+                r = pg.evaluate(LISTA_JS, sorted(LOJAS))
+                if r and "erro" not in r:
+                    break
+                if janela and tentativa == 1:
+                    pg.reload(wait_until="domcontentloaded", timeout=90000)
             if r and "erro" not in r:
                 break
             nav.close()
             if janela:
-                raise RuntimeError(f"Assaí recusou a lista de ofertas ({(r or {}).get('erro')})")
+                return _lista_anterior((r or {}).get("erro"))
             log(f"Assaí · lista recusada no modo invisível ({(r or {}).get('erro')}); abrindo o navegador minimizado")
 
         recebidas = {}
@@ -99,4 +108,35 @@ def encartes():
             time.sleep(0.5)
         nav.close()
     log(f"Assaí · {len(saida)} jornais de ofertas, {sum(len(e['imagens']) for e in saida)} páginas")
+    if saida:
+        salvar_json(LISTA_SALVA, {"salvo": hoje(), "encartes": saida})
     return saida
+
+
+def _data(t):
+    """'2026-11-19...' ou '19/11/2026' -> date (None se não der para ler)."""
+    t = str(t or "").strip()
+    try:
+        if "/" in t[:10]:
+            d, m, a = t[:10].split("/")
+            return date(int(a), int(m), int(d))
+        return date.fromisoformat(t[:10])
+    except ValueError:
+        return None
+
+
+def _lista_anterior(erro):
+    """O site recusou hoje: usa os jornais da última coleta boa que ainda estão valendo."""
+    salvo = ler_json(LISTA_SALVA, {}) or {}
+    hj = date.fromisoformat(hoje())
+    validos = []
+    for e in salvo.get("encartes") or []:
+        fim = _data(e.get("fim"))
+        salvo_em = _data(salvo.get("salvo"))
+        vale = fim >= hj if fim else bool(salvo_em and hj - salvo_em <= timedelta(days=2))
+        if vale and all(os.path.exists(a) for a in e.get("arquivos") or []):
+            validos.append(e)
+    if not validos:
+        raise RuntimeError(f"Assaí recusou a lista de ofertas ({erro}) e não há jornais anteriores valendo")
+    log(f"Assaí · site recusou a lista hoje ({erro}); uso os {len(validos)} jornais da última coleta que ainda valem")
+    return validos

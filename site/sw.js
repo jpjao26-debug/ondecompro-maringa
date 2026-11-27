@@ -1,6 +1,6 @@
 /* Service worker: abre rápido e funciona sem internet com os últimos preços baixados. */
-const VERSAO = "ocm-v1";
-const BASE = ["./", "index.html", "estilo.css", "app.js", "manifest.webmanifest", "icones/icone-192.png"];
+const VERSAO = "ocm-v3";
+const BASE = ["./", "index.html", "estilo.css?v=3", "app.js?v=3", "manifest.webmanifest", "icones/icone-192.png"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(VERSAO).then((c) => c.addAll(BASE)).then(() => self.skipWaiting()));
