@@ -1,0 +1,16 @@
+Teste na nuvem (servidor do GitHub) — 27/11/2026 14:15
+
+OK   muffato (13 s)
+     {"produtos": 595, "exemplo": [["Acendedor Paraná Bastão 5un", 6.7], ["Adesivo Instantâneo Scotch Bond 3g", 9.36], ["Aditivo Luxcar para Radiador Concentrado 1L", 15.0]], "seg_produtos": 13, "encartes": 0, "paginas_encarte": 0, "seg_encartes": 0}
+OK   atacadao (64 s)
+     {"produtos": 1531, "exemplo": [["Açúcar Alto Alegre Cristal 2kg", 6.19], ["Açúcar Alto Alegre Cristal 5kg", 16.49], ["Açúcar Alto Alegre Refinado 1kg", 3.79]], "seg_produtos": 64, "encartes": 0, "paginas_encarte": 0, "seg_encartes": 0}
+OK   amigao (71 s)
+     {"produtos": 895, "exemplo": [["Acendedor Gel 80º INPM Paraná 480g", 11.99], ["Acém Bovino sem Osso Resfriado Pedaço kg", 39.98], ["Alcatra Bovina com Maminha Resfriado Pedaço kg", 59.99]], "seg_produtos": 71, "encartes": 0, "paginas_encarte": 0, "seg_encartes": 0}
+OK   condor (80 s)
+     {"produtos": 399, "exemplo": [["Biscoito Butter Cookies 300g - Hermético", 34.49], ["Sal Rosa do Himalaia Sweet 200g - Com Moedor", 44.59], ["Multicereais Mucilon 600g - Leve 100g Grátis", 22.9]], "seg_produtos": 80, "encartes": 0, "paginas_encarte": 0, "seg_encartes": 0}
+FALHOU assai (20 s)
+     {"produtos": 0, "exemplo": [], "seg_produtos": 0, "encartes": 0, "paginas_encarte": 0, "seg_encartes": 20}
+OK   lejon (2 s)
+     {"produtos": 0, "exemplo": [], "seg_produtos": 0, "encartes": 2, "paginas_encarte": 10, "seg_encartes": 2}
+OK   maxatac (3 s)
+     {"produtos": 0, "exemplo": [], "seg_produtos": 0, "encartes": 10, "paginas_encarte": 39, "seg_encartes": 3}
